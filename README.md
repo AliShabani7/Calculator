@@ -40,7 +40,10 @@ Bootstrap 5
 JavaScript (ES6)
 
 📞 Contact
+
 For any questions or feedback, feel free to reach out:
+
 ✉️ Email: MrAliShabani07@gmail.com
+
 🌐 GitHub Profile: https://github.com/AliShabani7
 
