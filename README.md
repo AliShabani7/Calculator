@@ -17,11 +17,18 @@ Open the index.html file in your browser.
 Start calculating! 🎉
 
 📂 Project Structure
+
+
 📦 calculator
+
 ├── 📄 index.html       # Main HTML file
+
 ├── 📄 script.js       # Main JavaScript file
+
 ├── 📄 style.css       # Main CSS file
+
 └── 📄 README.md       # Project documentation
+
 
 🌐 Live Demo
 Check out the live version here: GitHub Pages 🚀
