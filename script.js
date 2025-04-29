@@ -1,7 +1,7 @@
-document.addEventListener("DOMContentLoaded", function () {
-  let display = document.querySelector(".display");
-
-  let buttons = document.querySelectorAll(".btn");
+document.addEventListener("DOMContentLoaded", () => {
+  const display = document.querySelector(".display");
+  const buttons = document.querySelectorAll(".btn");
+  const backspaceBtn = document.querySelector(".backspace");
 
   let currentInput = "";
   let previousInput = "";
@@ -9,20 +9,31 @@ document.addEventListener("DOMContentLoaded", function () {
   let resultDisplayed = false;
 
   function updateDisplay(value) {
-    display.value = value;
+    display.value = value || "0";
   }
 
-  function clearDisplay() {
+  function clearAll() {
     currentInput = "";
     previousInput = "";
     operator = "";
+    resultDisplayed = false;
     updateDisplay("0");
   }
 
+  function formatNumber(num) {
+    return Number(num).toLocaleString("en");
+  }
+
   function calculate() {
+    const prev = parseFloat(previousInput);
+    const curr = parseFloat(currentInput);
     let result;
-    let prev = parseFloat(previousInput);
-    let curr = parseFloat(currentInput);
+
+    if (operator === "/" && curr === 0) {
+      updateDisplay("خطای تقسیم بر صفر");
+      currentInput = "";
+      return;
+    }
 
     switch (operator) {
       case "+":
@@ -45,50 +56,55 @@ document.addEventListener("DOMContentLoaded", function () {
     previousInput = "";
     operator = "";
     resultDisplayed = true;
-    updateDisplay(currentInput);
+    updateDisplay(formatNumber(currentInput));
   }
 
-  buttons.forEach((button) => {
-    button.addEventListener("click", function () {
-      let value = this.innerText;
-
-      if (!isNaN(value) || value === ".") {
-        if (resultDisplayed) {
-          currentInput = value;
-          resultDisplayed = false;
-        } else {
-          if (value === "." && currentInput.includes(".")) {
-            return;
-          }
-          currentInput += value;
-        }
-        updateDisplay(currentInput);
-      } else if (value === "C") {
-        clearDisplay();
-      } else if (value === "=") {
-        if (operator !== "" && previousInput !== "") {
-          calculate();
-        }
+  function handleInput(value) {
+    if (!isNaN(value) || value === ".") {
+      if (resultDisplayed) {
+        currentInput = value;
+        resultDisplayed = false;
       } else {
-        if (currentInput === "") return;
-        if (operator !== "" && previousInput !== "") {
-          calculate();
-        }
-        operator = value;
-        previousInput = currentInput;
-        currentInput = "";
+        if (value === "." && currentInput.includes(".")) return;
+        currentInput += value;
       }
+      updateDisplay(currentInput);
+    } else if (["+", "-", "*", "/"].includes(value)) {
+      if (currentInput === "") return;
+      if (previousInput && operator) calculate();
+      operator = value;
+      previousInput = currentInput;
+      currentInput = "";
+    } else if (value === "=") {
+      if (operator && previousInput) calculate();
+    } else if (value === "C") {
+      clearAll();
+    }
+  }
+
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      handleInput(button.innerText);
     });
   });
 
-
-  document.querySelector(".backspace").addEventListener("click", function () {
-    currentInput = currentInput.slice(0, -1); 
-    if (currentInput === "") {
-      updateDisplay("0");
-    } else {
+  backspaceBtn.addEventListener("click", () => {
+    if (currentInput.length > 0) {
+      currentInput = currentInput.slice(0, -1);
       updateDisplay(currentInput);
+    } else {
+      updateDisplay("0");
     }
+  });
+
+
+  document.addEventListener("keydown", (e) => {
+    const key = e.key;
+    if (!isNaN(key) || key === ".") handleInput(key);
+    else if (["+", "-", "*", "/"].includes(key)) handleInput(key);
+    else if (key === "Enter") handleInput("=");
+    else if (key === "Backspace") backspaceBtn.click();
+    else if (key.toUpperCase() === "C") handleInput("C");
   });
 
   updateDisplay("0");
